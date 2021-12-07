@@ -12,10 +12,6 @@ function App() {
       .then(res => set_api_response(res));
   }
 
-  /*useEffect(() => {
-    call_API();
-  }, []);*/
-
   return (
     <div className="App">
       <header className="App-header">
