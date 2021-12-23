@@ -1,22 +1,27 @@
 .App {
-  background-color: #202124;;
+  background-color: #1a1a1a;;
   width: 100%;
   height: 100%;
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
 }
 
+.text {
+  color: white;
+}
+
 #Title_Wrapper {
-  background-color: ivory;
+  margin-top: 2.5%;
+  font-size: 30px;
 }
 
 #Name_Input_Wrapper {
-  background-color: ivory;
+  margin-top: 7.5%;
+  display: flex;
 }
 
 #Rules_Wrapper {
-  background-color: ivory;
+  margin-top: 5%;
 }
