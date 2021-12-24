@@ -20,17 +20,21 @@ function App() {
         </div>
 
         <div id="Name_Input_Wrapper">
-          <p className="text">Name: </p>
+          <p className="text">Name:</p>
           <input type='text' value={input} onChange={handle_change} />
           <button onClick={handle_submit}>Play</button>
         </div>
 
-        <p className="text">{`Ur name: ${name}`}</p>
+        {/*<p className="text">{`Ur name: ${name}`}</p>*/}
 
         <div id="Rules_Wrapper" className="text">
-          <p>Rule #1</p>
-          <p>Rule #2</p>
-          <p>Rule #3</p>
+          <h3 className="rule_decor">How To Play:</h3>
+          <div className="rule">
+            <p>1. WASD to move aroud</p>
+            <p>2. Mouse to aim</p>
+            <p>3. Spacebar to shoot</p>
+          </div>
+          <p className="rule_decor">Have fun!</p>
         </div>
     </div>
   );
