@@ -2,15 +2,14 @@
 import {useState} from 'react';
 import './Main.css';
 
-function Main() {
+function Main(props) {
   const [input, set_input] = useState('');
-  const [name, set_name] = useState('');
 
   let handle_change = e => {
     set_input(e.target.value)
   }
   let handle_submit = () => {
-    set_name(input);
+	  props.play(input);
   }
 
   return (
@@ -24,8 +23,6 @@ function Main() {
           <input type='text' value={input} onChange={handle_change} />
           <button onClick={handle_submit}>Play</button>
         </div>
-
-        {/*<p className="text">{`Ur name: ${name}`}</p>*/}
 
         <div id="Rules_Wrapper" className="text">
           <h3 className="rule_decor">How To Play:</h3>

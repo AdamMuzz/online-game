@@ -1,8 +1,22 @@
+import {useState} from 'react';
 import Main from './Main';
 
 function App() {
+  const [is_playing, set_playing] = useState(false);
+  const [name, set_name] = useState('');
+
+  const play = (name) => {
+    set_name(name);
+    set_playing(true);
+  }
+
+  if (is_playing) {
+    return (
+      <p>{`Playing as ${name}!`}</p>
+    );
+  }
   return (
-    <Main/>
+    <Main play={play} />
   );
 }
 
