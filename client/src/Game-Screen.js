@@ -16,11 +16,12 @@ class Player {
 		if (dirs[3]) {this.x+=2;}
 	}
 	render(ctx) {
+		//draw body
 		ctx.beginPath();
 		ctx.fillStyle = this.color;
 		ctx.rect(this.x, this.y, 40, 40);
 		ctx.fill();
-
+		//draw nametag
 		ctx.fillStyle = '#000';
 		ctx.font = '15px serif';
 		ctx.textAlign = 'center';
@@ -82,6 +83,7 @@ function Game_Screen(props) {
 		let ctx = canvas.getContext('2d');
 		ctx.scale(dpr, dpr);
 
+		//event listeners to grab when user taps a key
 		document.addEventListener("keydown", handle_key_down);
 		document.addEventListener("keyup", handle_key_up);
 		return () => {
@@ -90,6 +92,7 @@ function Game_Screen(props) {
 		};
 	}, []);
 
+	//draws all objects
 	const draw = (ctx) => {
 		//clear screen and draw background
 		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -106,6 +109,7 @@ function Game_Screen(props) {
 		}
 	}
 
+	//called every frame
 	useEffect(() => {
 		const canvas = canvasRef.current;
   	const context = canvas.getContext('2d');
