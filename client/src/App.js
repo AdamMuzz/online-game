@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import Main from './Main';
+import Game_Screen from './Game-Screen';
 
 function App() {
   const [is_playing, set_playing] = useState(false);
@@ -12,7 +13,7 @@ function App() {
 
   if (is_playing) {
     return (
-      <p>{`Playing as ${name}!`}</p>
+      <Game_Screen name={name} />
     );
   }
   return (
