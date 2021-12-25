@@ -18,10 +18,11 @@ class Player {
 }
 
 function Game_Screen(props) {
-	const [sprites, set_sprites] = useState([new Player(props.name, '#0f0')]);
-	const [key, set_key] = useState(null);
+	const [sprites, set_sprites] = useState([]);
+	const [keys, set_keys] = useState([false,false,false,false]);
 	const canvasRef = useRef(null);
 	let frameCount = 0;
+	let me = new Player(props.name, '#0f0');
 
 	const draw = (ctx) => {
 		//clear screen and draw background
@@ -30,7 +31,9 @@ function Game_Screen(props) {
 		ctx.fillStyle = '#fff';
 		ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		ctx.fill();
-		//draw all sprites
+		//draw player
+		me.render(ctx);
+		//draw all other sprites
 		for (let i in sprites) {
 			sprites[i].render(ctx);
 		}
@@ -54,7 +57,6 @@ function Game_Screen(props) {
   }, [frameCount]);
 
 	return (
-		
 		<div className='App'>
 			<div id='header'>
 				<p className='text'>{`Playing as ${props.name}!`}</p>
