@@ -10,16 +10,21 @@ class Player {
 		this.y = 0;
 	}
 	move(dirs) {
-		if (dirs[0]) {this.y--;}
-		if (dirs[1]) {this.x--;}
-		if (dirs[2]) {this.y++;}
-		if (dirs[3]) {this.x++;}
+		if (dirs[0]) {this.y-=2;}
+		if (dirs[1]) {this.x-=2;}
+		if (dirs[2]) {this.y+=2;}
+		if (dirs[3]) {this.x+=2;}
 	}
 	render(ctx) {
 		ctx.beginPath();
 		ctx.fillStyle = this.color;
-		ctx.rect(this.x, this.y, 10, 10);
+		ctx.rect(this.x, this.y, 40, 40);
 		ctx.fill();
+
+		ctx.fillStyle = '#000';
+		ctx.font = '15px serif';
+		ctx.textAlign = 'center';
+		ctx.fillText(this.id, this.x+20, this.y-5, 75);
 	}
 }
 
@@ -66,7 +71,17 @@ function Game_Screen(props) {
 				return;
 		}
 	}
+	//called on initial mount of game screen
 	useEffect(() => {
+		//fix canvas resolution
+		let dpr = window.devicePixelRatio || 1;
+		const canvas = canvasRef.current;
+		let rect = canvas.getBoundingClientRect();
+		canvas.width = rect.width * dpr;
+		canvas.height = rect.height * dpr;
+		let ctx = canvas.getContext('2d');
+		ctx.scale(dpr, dpr);
+
 		document.addEventListener("keydown", handle_key_down);
 		document.addEventListener("keyup", handle_key_up);
 		return () => {
