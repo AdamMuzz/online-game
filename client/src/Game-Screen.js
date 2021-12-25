@@ -2,19 +2,39 @@
 import { useState, useEffect, useRef } from 'react';
 import './Game-Screen.css';
 
+class Player {
+	constructor(id, color) {
+		this.id = id;
+		this.color = color;
+		this.x = 0;
+		this.y = 0;
+	}
+	render(ctx) {
+		ctx.beginPath();
+		ctx.fillStyle = this.color;
+		ctx.rect(this.x, this.y, 10, 10);
+		ctx.fill();
+	}
+}
 
 function Game_Screen(props) {
+	const [sprites, set_sprites] = useState([new Player(props.name, '#0f0')]);
 	const [key, set_key] = useState(null);
 	const canvasRef = useRef(null);
 	let frameCount = 0;
 
-	const draw = (ctx, frameCount) => {
-  	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  	ctx.fillStyle = '#000000';
-  	ctx.beginPath();
-  	ctx.arc(50, 100, 20*Math.sin(frameCount*0.05)**2, 0, 2*Math.PI);
-  	ctx.fill();
-  }
+	const draw = (ctx) => {
+		//clear screen and draw background
+		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+		ctx.beginPath();
+		ctx.fillStyle = '#fff';
+		ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
+		ctx.fill();
+		//draw all sprites
+		for (let i in sprites) {
+			sprites[i].render(ctx);
+		}
+	}
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -23,7 +43,7 @@ function Game_Screen(props) {
 
   	const render = () => {
     	frameCount++
-    	draw(context, frameCount)
+    	draw(context)
     	animationFrameId = window.requestAnimationFrame(render)
     }
     render()
