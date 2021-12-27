@@ -19,5 +19,7 @@
 
 #screen {
 	width: 90%;
+	max-width: 1400px;
 	height: 90%;
+	max-height: 600px;
 }
