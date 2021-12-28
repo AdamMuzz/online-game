@@ -107,7 +107,7 @@ function Game_Screen(props) {
 		return () => {
 			document.removeEventListener("keydown", handle_key_down);
 			document.removeEventListener("keyup", handle_key_up);
-			socket.emit('leave', props.name);
+			//socket.emit('leave', props.name);
 			socket.disconnect();
 		};
 	}, []);
@@ -172,11 +172,12 @@ const fix_res = (canvas) => {
 const move = (player, dirs, socket) => {
 	let [x,y] = player.get_pos();
 	let moved = false;
+
 	if (dirs[0]) {y-=2; moved = true;}
 	if (dirs[1]) {x-=2; moved = true;}
 	if (dirs[2]) {y+=2; moved = true;}
 	if (dirs[3]) {x+=2; moved = true;}
+
 	player.set_pos(x,y);
 	if (moved) {socket.emit('moved', player);}
-	//socket.emit('moved');
 }

@@ -13,9 +13,13 @@ const io = new Server(server, {
 	}
 });
 
+
+
 app.get('/', (req,res) => {
 	res.send('<h2>Hello World!</h2>')
 });
+
+
 
 class Player {
 	constructor(id) {
@@ -40,7 +44,7 @@ io.on('connection', (socket) => {
 		socket.broadcast.emit('joined', id);
 
 		//add new player to connected players
-		players.set(id, new Player(id));
+		players.set(socket, new Player(id));
 
 		console.log(`${id} connected`);
 	});
@@ -51,11 +55,14 @@ io.on('connection', (socket) => {
 	});
 
 	//handle when player disconnects
-	socket.on('leave', (id) => {
-		players.delete(id);
+	socket.on('disconnect', () => {
+		id = players.get(socket).id;
+		players.delete(socket);
 		console.log(`${id} has left the game`);
 	});
 });
+
+
 
 server.listen(PORT, () => {
 	console.log(`listening on port ${PORT}`);
