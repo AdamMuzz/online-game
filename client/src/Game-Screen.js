@@ -104,6 +104,12 @@ function Game_Screen(props) {
 			s.get(player.id).set_pos(player.x, player.y);
 			set_sprites(s);
 		});
+		//handle when someone leaves
+		socket.on('left', (id) => {
+			const s = sprites;
+			s.delete(id);
+			set_sprites(s);
+		});
 
 		//event listeners to grab when user taps a key
 		document.addEventListener("keydown", handle_key_down);

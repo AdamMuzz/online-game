@@ -64,6 +64,7 @@ io.on('connection', (socket) => {
 	socket.on('disconnect', () => {
 		id = players.get(socket).id;
 		players.delete(socket);
+		socket.broadcast.emit('left', id);
 		console.log(`${id} has left the game`);
 	});
 });
