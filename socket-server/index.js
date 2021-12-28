@@ -50,8 +50,14 @@ io.on('connection', (socket) => {
 	});
 
 	//handle when player moves
-	socket.on('moved', (obj) => {
-		console.log(`${obj.id} moved!`);
+	socket.on('moved', (coords) => {
+		//update player's pos
+		let [x,y] = coords;
+		const player = players.get(socket);
+		player.x = x;
+		player.y = y;
+		//relay to all other users
+		socket.broadcast.emit('moved', player);
 	});
 
 	//handle when player disconnects

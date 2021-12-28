@@ -98,6 +98,12 @@ function Game_Screen(props) {
 			set_sprites(new Map(sprites.set(id, new Player(id, 0, 0))));
 			console.log(`${id} joined the game!`);
 		});
+		//handle when someone else moves
+		socket.on('moved', (player) => {
+			const s = sprites;
+			s.get(player.id).set_pos(player.x, player.y);
+			set_sprites(s);
+		});
 
 		//event listeners to grab when user taps a key
 		document.addEventListener("keydown", handle_key_down);
@@ -179,5 +185,5 @@ const move = (player, dirs, socket) => {
 	if (dirs[3]) {x+=2; moved = true;}
 
 	player.set_pos(x,y);
-	if (moved) {socket.emit('moved', player);}
+	if (moved) {socket.emit('moved', [x,y]);}
 }
