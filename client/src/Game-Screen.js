@@ -72,16 +72,12 @@ function Game_Screen(props) {
 				return;
 		}
 	}
+	
 	//called on initial mount of game screen
 	useEffect(() => {
 		//fix canvas resolution
-		let dpr = window.devicePixelRatio || 1;
 		const canvas = canvasRef.current;
-		let rect = canvas.getBoundingClientRect();
-		canvas.width = rect.width * dpr;
-		canvas.height = rect.height * dpr;
-		let ctx = canvas.getContext('2d');
-		ctx.scale(dpr, dpr);
+		fix_res(canvas);
 
 		//event listeners to grab when user taps a key
 		document.addEventListener("keydown", handle_key_down);
@@ -139,3 +135,12 @@ function Game_Screen(props) {
 }
 
 export default Game_Screen;
+
+const fix_res = (canvas) => {
+	let dpr = window.devicePixelRatio || 1;
+	let rect = canvas.getBoundingClientRect();
+	canvas.width = rect.width * dpr;
+	canvas.height = rect.height * dpr;
+	let ctx = canvas.getContext('2d');
+	ctx.scale(dpr, dpr);
+}
