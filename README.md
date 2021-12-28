@@ -1,7 +1,7 @@
 # online-game
 a very simple online game as a demonstration of network programming
 
-#How to Run
+# How to Run
 cd into the `socket-server` directory and run npm start
 This will start the backend on localhost:9000
 
