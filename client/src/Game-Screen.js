@@ -34,8 +34,8 @@ class Player {
 
 function Game_Screen(props) {
 	const [socket, set_socket] = useState(null);
-	const [sprites, set_sprites] = useState([new Player(props.name)]);
-	const me = sprites[0];
+	const [sprites, set_sprites] = useState(new Map([[props.name, new Player(props.name)]]));
+	const me = sprites.get(props.name);
 	let dirs = [false,false,false,false];
 	const canvasRef = useRef(null);
 	let frameCount = 0;
@@ -111,8 +111,8 @@ function Game_Screen(props) {
 		//handle user movement
 		move(me, dirs);
 		//draw all sprites
-		for (let i in sprites) {
-			sprites[i].render(ctx);
+		for (const i of sprites.values()) {
+			i.render(ctx);
 		}
 	}
 
