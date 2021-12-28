@@ -1,6 +1,9 @@
 //Game Screen
 import { useState, useEffect, useRef } from 'react';
+import {io} from 'socket.io-client';
 import './Game-Screen.css';
+
+const ENDPOINT = 'http://10.0.0.30:9000';
 
 class Player {
 	constructor(id, color) {
@@ -32,6 +35,7 @@ class Player {
 function Game_Screen(props) {
 	const [sprites, set_sprites] = useState([]);
 	const canvasRef = useRef(null);
+	const socket = io(ENDPOINT);
 	let dirs = [false,false,false,false];
 	let frameCount = 0;
 	let me = new Player(props.name, '#0f0');
@@ -72,7 +76,7 @@ function Game_Screen(props) {
 				return;
 		}
 	}
-	
+
 	//called on initial mount of game screen
 	useEffect(() => {
 		//fix canvas resolution
@@ -82,9 +86,12 @@ function Game_Screen(props) {
 		//event listeners to grab when user taps a key
 		document.addEventListener("keydown", handle_key_down);
 		document.addEventListener("keyup", handle_key_up);
+
+		//cleanup
 		return () => {
 			document.removeEventListener("keydown", handle_key_down);
 			document.removeEventListener("keyup", handle_key_up);
+			socket.disconnect();
 		};
 	}, []);
 
