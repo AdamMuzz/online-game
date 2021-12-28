@@ -85,6 +85,7 @@ function Game_Screen(props) {
 
 		//create connection to backend
 		const s = io(ENDPOINT);
+		s.emit('joined', props.name);
 		set_socket(s);
 
 		//event listeners to grab when user taps a key
