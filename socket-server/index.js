@@ -7,7 +7,11 @@ const app = express();
 app.use(cors());
 const http = require('http');
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+	cors: {
+		methods: ['GET', 'POST']
+	}
+});
 
 app.get('/', (req,res) => {
 	res.send('<h2>Hello World!</h2>')
@@ -15,6 +19,9 @@ app.get('/', (req,res) => {
 
 io.on('connection', (socket) => {
 	console.log('a user connected!');
+	socket.on('disconnect', () => {
+		console.log('a user disconnected!');
+	});
 });
 
 server.listen(PORT, () => {

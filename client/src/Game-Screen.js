@@ -35,7 +35,6 @@ class Player {
 function Game_Screen(props) {
 	const [sprites, set_sprites] = useState([]);
 	const canvasRef = useRef(null);
-	const socket = io(ENDPOINT);
 	let dirs = [false,false,false,false];
 	let frameCount = 0;
 	let me = new Player(props.name, '#0f0');
@@ -82,6 +81,8 @@ function Game_Screen(props) {
 		//fix canvas resolution
 		const canvas = canvasRef.current;
 		fix_res(canvas);
+
+		const socket = io(ENDPOINT);
 
 		//event listeners to grab when user taps a key
 		document.addEventListener("keydown", handle_key_down);
