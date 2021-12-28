@@ -10,10 +10,13 @@ function App() {
     set_name(name);
     set_playing(true);
   }
+  const quit = () => {
+    set_playing(false);
+  }
 
   if (is_playing) {
     return (
-      <Game_Screen name={name} />
+      <Game_Screen name={name} quit={quit} />
     );
   }
   return (

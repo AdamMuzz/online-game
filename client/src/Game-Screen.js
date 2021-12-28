@@ -107,6 +107,7 @@ function Game_Screen(props) {
 		return () => {
 			document.removeEventListener("keydown", handle_key_down);
 			document.removeEventListener("keyup", handle_key_up);
+			socket.emit('leave', props.name);
 			socket.disconnect();
 		};
 	}, []);
@@ -149,6 +150,7 @@ function Game_Screen(props) {
 		<div className='App'>
 			<div id='header'>
 				<p className='text'>{`Playing as ${props.name}!`}</p>
+				<button onClick={props.quit}>Quit</button>
 			</div>
 
 			<canvas id='screen' ref={canvasRef}/>
