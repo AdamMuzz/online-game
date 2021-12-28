@@ -6,22 +6,22 @@ import './Game-Screen.css';
 const ENDPOINT = 'http://10.0.0.30:9000';
 
 class Player {
-	constructor(id, color) {
+	constructor(id) {
 		this.id = id;
-		this.color = color;
 		this.x = 0;
 		this.y = 0;
 	}
-	move(dirs) {
-		if (dirs[0]) {this.y-=2;}
-		if (dirs[1]) {this.x-=2;}
-		if (dirs[2]) {this.y+=2;}
-		if (dirs[3]) {this.x+=2;}
+	get_pos() {
+		return [this.x, this.y];
 	}
-	render(ctx) {
+	set_pos(x,y) {
+		this.x = x;
+		this.y = y;
+	}
+	render = (ctx) => {
 		//draw body
 		ctx.beginPath();
-		ctx.fillStyle = this.color;
+		ctx.fillStyle = '#f00';
 		ctx.rect(this.x, this.y, 40, 40);
 		ctx.fill();
 		//draw nametag
@@ -33,11 +33,12 @@ class Player {
 }
 
 function Game_Screen(props) {
-	const [sprites, set_sprites] = useState([]);
-	const canvasRef = useRef(null);
+	const [socket, set_socket] = useState(null);
+	const [sprites, set_sprites] = useState([new Player(props.name)]);
+	const me = sprites[0];
 	let dirs = [false,false,false,false];
+	const canvasRef = useRef(null);
 	let frameCount = 0;
-	let me = new Player(props.name, '#0f0');
 
 	const handle_key_down = (e) => {
 		switch(e.key) {
@@ -82,7 +83,9 @@ function Game_Screen(props) {
 		const canvas = canvasRef.current;
 		fix_res(canvas);
 
-		const socket = io(ENDPOINT);
+		//create connection to backend
+		const s = io(ENDPOINT);
+		set_socket(s);
 
 		//event listeners to grab when user taps a key
 		document.addEventListener("keydown", handle_key_down);
@@ -104,10 +107,9 @@ function Game_Screen(props) {
 		ctx.fillStyle = '#fff';
 		ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		ctx.fill();
-		//draw player
-		me.move(dirs);
-		me.render(ctx);
-		//draw all other sprites
+		//handle user movement
+		move(me, dirs);
+		//draw all sprites
 		for (let i in sprites) {
 			sprites[i].render(ctx);
 		}
@@ -151,4 +153,13 @@ const fix_res = (canvas) => {
 	canvas.height = rect.height * dpr;
 	let ctx = canvas.getContext('2d');
 	ctx.scale(dpr, dpr);
+}
+
+const move = (player, dirs) => {
+	let [x,y] = player.get_pos();
+	if (dirs[0]) {y-=2;}
+	if (dirs[1]) {x-=2;}
+	if (dirs[2]) {y+=2;}
+	if (dirs[3]) {x+=2;}
+	player.set_pos(x,y);
 }
