@@ -7,10 +7,10 @@ const ENDPOINT = 'http://10.0.0.30:9000';
 let socket = null;
 
 class Player {
-	constructor(id) {
+	constructor(id, x, y) {
 		this.id = id;
-		this.x = 0;
-		this.y = 0;
+		this.x = x;
+		this.y = y;
 	}
 	get_pos() {
 		return [this.x, this.y];
@@ -34,7 +34,7 @@ class Player {
 }
 
 function Game_Screen(props) {
-	const [sprites, set_sprites] = useState(new Map([[props.name, new Player(props.name)]]));
+	const [sprites, set_sprites] = useState(new Map([[props.name, new Player(props.name, 0, 0)]]));
 	const me = sprites.get(props.name);
 	let dirs = [false,false,false,false];
 	const canvasRef = useRef(null);
@@ -86,12 +86,17 @@ function Game_Screen(props) {
 		//create connection to backend
 		socket = io(ENDPOINT);
 		socket.emit('joined', props.name);
-		//backend logic
-		socket.on('hello', () => {
-			console.log('connected w/ backend successfully!');
+		//grab all already connected players
+		socket.on('welcome', (connected) => {
+			for (const i of connected) {
+				console.log(`${i.id} is already connected!`);
+				set_sprites(new Map(sprites.set(i.id, new Player(i.id, i.x, i.y))));
+			}
 		});
-		socket.on('joined', (name) => {
-			console.log(`${name} joined the game!`);
+		//handle when someone else joins the game
+		socket.on('joined', (id) => {
+			set_sprites(new Map(sprites.set(id, new Player(id, 0, 0))));
+			console.log(`${id} joined the game!`);
 		});
 
 		//event listeners to grab when user taps a key
