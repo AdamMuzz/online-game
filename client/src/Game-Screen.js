@@ -4,6 +4,7 @@ import {io} from 'socket.io-client';
 import './Game-Screen.css';
 
 const ENDPOINT = 'http://10.0.0.30:9000';
+let socket = null;
 
 class Player {
 	constructor(id) {
@@ -33,7 +34,6 @@ class Player {
 }
 
 function Game_Screen(props) {
-	const [socket, set_socket] = useState(null);
 	const [sprites, set_sprites] = useState(new Map([[props.name, new Player(props.name)]]));
 	const me = sprites.get(props.name);
 	let dirs = [false,false,false,false];
@@ -84,9 +84,15 @@ function Game_Screen(props) {
 		fix_res(canvas);
 
 		//create connection to backend
-		const s = io(ENDPOINT);
-		s.emit('joined', props.name);
-		set_socket(s);
+		socket = io(ENDPOINT);
+		socket.emit('joined', props.name);
+		//backend logic
+		socket.on('hello', () => {
+			console.log('connected w/ backend successfully!');
+		});
+		socket.on('joined', (name) => {
+			console.log(`${name} joined the game!`);
+		});
 
 		//event listeners to grab when user taps a key
 		document.addEventListener("keydown", handle_key_down);
@@ -109,7 +115,7 @@ function Game_Screen(props) {
 		ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		ctx.fill();
 		//handle user movement
-		move(me, dirs);
+		move(me, dirs, socket);
 		//draw all sprites
 		for (const i of sprites.values()) {
 			i.render(ctx);
@@ -156,11 +162,14 @@ const fix_res = (canvas) => {
 	ctx.scale(dpr, dpr);
 }
 
-const move = (player, dirs) => {
+const move = (player, dirs, socket) => {
 	let [x,y] = player.get_pos();
-	if (dirs[0]) {y-=2;}
-	if (dirs[1]) {x-=2;}
-	if (dirs[2]) {y+=2;}
-	if (dirs[3]) {x+=2;}
+	let moved = false;
+	if (dirs[0]) {y-=2; moved = true;}
+	if (dirs[1]) {x-=2; moved = true;}
+	if (dirs[2]) {y+=2; moved = true;}
+	if (dirs[3]) {x+=2; moved = true;}
 	player.set_pos(x,y);
+	if (moved) {socket.emit('moved', player);}
+	//socket.emit('moved');
 }

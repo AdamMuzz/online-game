@@ -18,10 +18,20 @@ app.get('/', (req,res) => {
 });
 
 io.on('connection', (socket) => {
-	//console.log('a user connected!');
+	//handle when player joins
 	socket.on('joined', (id) => {
+		socket.emit('hello'); //send all already connected users...
+		socket.broadcast.emit('joined', id);
+
 		console.log(`user connected w/ name ${id}`);
 	});
+
+	//handle when player moves
+	socket.on('moved', (obj) => {
+		console.log(`${obj.id} moved!`);
+	});
+
+	//handle when player disconnects
 	socket.on('disconnect', () => {
 		console.log('a user disconnected!');
 	});
