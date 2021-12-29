@@ -34,6 +34,7 @@ class Player {
 
 function Game_Screen(props) {
 	const [sprites, set_sprites] = useState(new Map([[props.name, new Player(props.name, 0, 0)]]));
+	const [msgs, set_msgs] = useState(['','','']);
 	const me = sprites.get(props.name);
 	let dirs = [false,false,false,false];
 	const canvasRef = useRef(null);
@@ -88,14 +89,17 @@ function Game_Screen(props) {
 		//grab all already connected players
 		socket.on('welcome', (connected) => {
 			for (const i of connected) {
-				console.log(`${i.id} is already connected!`);
 				set_sprites(new Map(sprites.set(i.id, new Player(i.id, i.x, i.y))));
 			}
 		});
 		//handle when someone else joins the game
 		socket.on('joined', (id) => {
 			set_sprites(new Map(sprites.set(id, new Player(id, 0, 0))));
-			console.log(`${id} joined the game!`);
+
+			let m = msgs;
+			m.shift();
+			m.push(`${id.substring(0,10)} joined the game`);
+			set_msgs(m);
 		});
 		//handle when someone else moves
 		socket.on('moved', (player) => {
@@ -108,6 +112,11 @@ function Game_Screen(props) {
 			const s = sprites;
 			s.delete(id);
 			set_sprites(s);
+
+			let m = msgs;
+			m.shift();
+			m.push(`${id.substring(0,10)} left the game`);
+			set_msgs(m);
 		});
 
 		//event listeners to grab when user taps a key
@@ -138,8 +147,15 @@ function Game_Screen(props) {
 		}
 		//draw msg board
 		ctx.beginPath();
-		ctx.fillStyle = '#0003'
-		ctx.fillRect(10, 10, 200, 100);
+		ctx.fillStyle = '#0003';
+		ctx.fillRect(10, 10, 200, 90);
+		//draw msgs
+		ctx.fillStyle = '#0009';
+		ctx.font = '15px serif';
+		ctx.textAlign = 'start';
+		ctx.fillText(msgs[0], 20, 35);
+		ctx.fillText(msgs[1], 20, 60);
+		ctx.fillText(msgs[2], 20, 85);
 	}
 
 	//called every frame
