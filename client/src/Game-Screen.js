@@ -98,7 +98,7 @@ function Game_Screen(props) {
 
 			let m = msgs;
 			m.shift();
-			m.push(`${id.substring(0,10)} joined the game`);
+			m.push(`${get_time()} ${id.substring(0,10)} joined the game`);
 			set_msgs(m);
 		});
 		//handle when someone else moves
@@ -115,7 +115,7 @@ function Game_Screen(props) {
 
 			let m = msgs;
 			m.shift();
-			m.push(`${id.substring(0,10)} left the game`);
+			m.push(`${get_time()} ${id.substring(0,10)} left the game`);
 			set_msgs(m);
 		});
 
@@ -148,14 +148,14 @@ function Game_Screen(props) {
 		//draw msg board
 		ctx.beginPath();
 		ctx.fillStyle = '#0003';
-		ctx.fillRect(10, 10, 200, 90);
+		ctx.fillRect(10, 10, 190, 75);
 		//draw msgs
 		ctx.fillStyle = '#0009';
-		ctx.font = '15px serif';
+		ctx.font = '12px serif';
 		ctx.textAlign = 'start';
-		ctx.fillText(msgs[0], 20, 35);
-		ctx.fillText(msgs[1], 20, 60);
-		ctx.fillText(msgs[2], 20, 85);
+		ctx.fillText(msgs[0], 20, 30);
+		ctx.fillText(msgs[1], 20, 50);
+		ctx.fillText(msgs[2], 20, 70);
 	}
 
 	//called every frame
@@ -210,4 +210,9 @@ const move = (player, dirs, socket) => {
 
 	player.set_pos(x,y);
 	if (moved) {socket.emit('moved', [x,y]);}
+}
+
+const get_time = () => {
+	const d = new Date();
+	return `[${d.getHours()}:${d.getMinutes()}]`;
 }
