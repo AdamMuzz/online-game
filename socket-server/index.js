@@ -1,11 +1,13 @@
+//import dependencies
 const express = require('express');
+const http = require('http');
 const {Server} = require('socket.io');
 const cors = require('cors');
 
+//environment setup
 const PORT = process.env.PORT || 9000;
 const app = express();
 app.use(cors());
-const http = require('http');
 const server = http.createServer(app);
 const io = new Server(server, {
 	cors: {
@@ -15,12 +17,14 @@ const io = new Server(server, {
 
 
 
+//express handling of serv requests
 app.get('/', (req,res) => {
 	res.send('<h2>Hello World!</h2>')
 });
 
 
 
+//socket io communication handling
 class Player {
 	constructor(id) {
 		this.id = id;
@@ -71,6 +75,7 @@ io.on('connection', (socket) => {
 
 
 
+//make server listen on given port
 server.listen(PORT, () => {
 	console.log(`listening on port ${PORT}`);
 });
