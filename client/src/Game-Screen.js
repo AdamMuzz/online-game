@@ -23,8 +23,7 @@ class Player {
 		//draw body
 		ctx.beginPath();
 		ctx.fillStyle = '#f00';
-		ctx.rect(this.x, this.y, 40, 40);
-		ctx.fill();
+		ctx.fillRect(this.x, this.y, 40, 40);
 		//draw nametag
 		ctx.fillStyle = '#000';
 		ctx.font = '15px serif';
@@ -130,14 +129,17 @@ function Game_Screen(props) {
 		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		ctx.beginPath();
 		ctx.fillStyle = '#fff';
-		ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
-		ctx.fill();
+		ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		//handle user movement
 		move(me, dirs, socket);
 		//draw all sprites
 		for (const i of sprites.values()) {
 			i.render(ctx);
 		}
+		//draw msg board
+		ctx.beginPath();
+		ctx.fillStyle = '#0003'
+		ctx.fillRect(10, 10, 200, 100);
 	}
 
 	//called every frame
