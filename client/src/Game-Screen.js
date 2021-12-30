@@ -4,7 +4,7 @@ import {io} from 'socket.io-client';
 import './Game-Screen.css';
 
 const ENDPOINT = 'http://10.0.0.30:9000';
-let socket = null;
+//let socket = null;
 
 class Player {
 	constructor(id, x, y) {
@@ -34,12 +34,13 @@ class Player {
 
 function Game_Screen(props) {
 	const [sprites, set_sprites] = useState(new Map([[props.name, new Player(props.name, 0, 0)]]));
-	const [msgs, set_msgs] = useState(['','','']);
 	const me = sprites.get(props.name);
-	let dirs = [false,false,false,false];
-	const canvasRef = useRef(null);
-	let frameCount = 0;
+	const [msgs, set_msgs] = useState(['','','']);
 	const [mcoords, set_mcoords] = useState([0,0]);
+	const canvasRef = useRef(null);
+	let dirs = [false,false,false,false];
+	let frameCount = 0;
+	let socket = null;
 
 	const handle_key_down = (e) => {
 		switch(e.key) {
@@ -81,14 +82,15 @@ function Game_Screen(props) {
 		const rect = canvasRef.current.getBoundingClientRect();
 		const x = Math.floor(e.clientX - rect.left);
     const y = Math.floor(e.clientY - rect.top);
-		set_mcoords([x,y]);
+		if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+			set_mcoords([x,y]);
+		}
 	}
 
 	//called on initial mount of game screen
 	useEffect(() => {
 		//fix canvas resolution
-		const canvas = canvasRef.current;
-		fix_res(canvas);
+		fix_res(canvasRef.current);
 
 		//create connection to backend
 		socket = io(ENDPOINT);
@@ -129,15 +131,15 @@ function Game_Screen(props) {
 		//event listeners to grab when user taps a key
 		document.addEventListener("keydown", handle_key_down);
 		document.addEventListener("keyup", handle_key_up);
-		canvasRef.current.addEventListener("mousemove", get_mouse);
+		document.addEventListener("mousemove", get_mouse);
 
 		//cleanup
 		return () => {
 			document.removeEventListener("keydown", handle_key_down);
 			document.removeEventListener("keyup", handle_key_up);
-			canvasRef.current.addEventListener("mousemove", get_mouse);
-			//socket.emit('leave', props.name);
+			document.removeEventListener("mousemove", get_mouse);
 			socket.disconnect();
+			console.log('unmounted');
 		};
 	}, []);
 
