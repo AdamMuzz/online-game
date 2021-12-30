@@ -4,7 +4,6 @@ import {io} from 'socket.io-client';
 import './Game-Screen.css';
 
 const ENDPOINT = 'http://10.0.0.30:9000';
-//let socket = null;
 
 class Player {
 	constructor(id, x, y) {
@@ -139,19 +138,16 @@ function Game_Screen(props) {
 			document.removeEventListener("keyup", handle_key_up);
 			document.removeEventListener("mousemove", get_mouse);
 			socket.disconnect();
-			console.log('unmounted');
 		};
 	}, []);
 
-	//draws all objects
+	//draws cur instance of game screen
 	const draw = (ctx) => {
 		//clear screen and draw background
 		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		ctx.beginPath();
 		ctx.fillStyle = '#fff';
 		ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-		//handle user movement
-		move(me, dirs, socket);
 		//draw all sprites
 		for (const i of sprites.values()) {
 			i.render(ctx);
@@ -176,14 +172,15 @@ function Game_Screen(props) {
 		let animationFrameId;
 
   	const render = () => {
-    	frameCount++
-    	draw(context)
-    	animationFrameId = window.requestAnimationFrame(render)
+    	frameCount++;
+			move(me, dirs, socket);
+    	draw(context);
+    	animationFrameId = window.requestAnimationFrame(render);
     }
-    render()
+    render();
     
     return () => {
-    	window.cancelAnimationFrame(animationFrameId)
+    	window.cancelAnimationFrame(animationFrameId);
     }
   }, [frameCount]);
 
