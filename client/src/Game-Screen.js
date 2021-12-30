@@ -39,6 +39,7 @@ function Game_Screen(props) {
 	let dirs = [false,false,false,false];
 	const canvasRef = useRef(null);
 	let frameCount = 0;
+	const [mcoords, set_mcoords] = useState([0,0]);
 
 	const handle_key_down = (e) => {
 		switch(e.key) {
@@ -75,6 +76,12 @@ function Game_Screen(props) {
 			default:
 				return;
 		}
+	}
+	const get_mouse = (e) => {
+		const rect = canvasRef.current.getBoundingClientRect();
+		const x = Math.floor(e.clientX - rect.left);
+    const y = Math.floor(e.clientY - rect.top);
+		set_mcoords([x,y]);
 	}
 
 	//called on initial mount of game screen
@@ -122,11 +129,13 @@ function Game_Screen(props) {
 		//event listeners to grab when user taps a key
 		document.addEventListener("keydown", handle_key_down);
 		document.addEventListener("keyup", handle_key_up);
+		canvasRef.current.addEventListener("mousemove", get_mouse);
 
 		//cleanup
 		return () => {
 			document.removeEventListener("keydown", handle_key_down);
 			document.removeEventListener("keyup", handle_key_up);
+			canvasRef.current.addEventListener("mousemove", get_mouse);
 			//socket.emit('leave', props.name);
 			socket.disconnect();
 		};
@@ -184,6 +193,7 @@ function Game_Screen(props) {
 			</div>
 
 			<canvas id='screen' ref={canvasRef}/>
+			<p className='text'>({mcoords[0]},{mcoords[1]})</p>
 		</div>
 	);
 }
