@@ -5,6 +5,7 @@ import './Game-Screen.css';
 
 const ENDPOINT = 'http://10.0.0.30:9000';
 
+//player obj
 class Player {
 	constructor(id, x, y) {
 		this.id = id;
@@ -30,10 +31,28 @@ class Player {
 		ctx.fillText(this.id, this.x+20, this.y-5, 75);
 	}
 }
+//projectile obj
+class Projectile {
+	constructor(id, p, v) {
+		this.id = id;
+		[this.x, this.y] = p;
+		[this.vx,this.vy] = v;
+	}
+	move = () => {
+		this.x += this.vx;
+		this.y += this.vy;
+	}
+	render = (ctx) => {
+		ctx.beginPath();
+		ctx.fillStyle = '#000';
+		ctx.fillRect(this.x, this.y, 10, 10);
+	}
+}
 
 function Game_Screen(props) {
 	const [sprites, set_sprites] = useState(new Map([[props.name, new Player(props.name, 0, 0)]]));
 	const me = sprites.get(props.name);
+	const [projs, set_projs] = useState([]);
 	const [msgs, set_msgs] = useState(['','','']);
 	const [mcoords, set_mcoords] = useState([0,0]);
 	const canvasRef = useRef(null);
@@ -220,6 +239,18 @@ const move = (player, dirs, socket) => {
 	player.set_pos(x,y);
 	if (moved) {socket.emit('moved', [x,y]);}
 }
+
+/*const handle_collisions = (players, projectiles) => {
+	for (i of projectiles) {
+		for (j of players.values()) {
+
+		}
+	}
+}
+const collide = (o1, o2) => {
+	o1.l > o2.r || o2.l > o1.l
+	o1.b > o2.t || o2.b > o1.t
+}*/
 
 const get_time = () => {
 	const d = new Date();
