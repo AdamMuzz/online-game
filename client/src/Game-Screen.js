@@ -4,6 +4,8 @@ import {io} from 'socket.io-client';
 import './Game-Screen.css';
 
 const ENDPOINT = 'http://10.0.0.30:9000';
+const PLAYER_SIZE = 40;
+const PROJECTILE_SIZE = 10;
 
 //player obj
 class Player {
@@ -11,6 +13,7 @@ class Player {
 		this.id = id;
 		this.x = x;
 		this.y = y;
+		this.s = PLAYER_SIZE; 
 	}
 	get_pos() {
 		return [this.x, this.y];
@@ -23,18 +26,19 @@ class Player {
 		//draw body
 		ctx.beginPath();
 		ctx.fillStyle = '#f00';
-		ctx.fillRect(this.x, this.y, 40, 40);
+		ctx.fillRect(this.x, this.y, this.s, this.s);
 		//draw nametag
 		ctx.fillStyle = '#000';
 		ctx.font = '15px serif';
 		ctx.textAlign = 'center';
-		ctx.fillText(this.id, this.x+20, this.y-5, 75);
+		ctx.fillText(this.id, this.x+(this.s/2), this.y-5, 75);
 	}
 }
 //projectile obj
 class Projectile {
 	constructor(id, p, v) {
 		this.id = id;
+		this.s = PROJECTILE_SIZE;
 		[this.x, this.y] = p;
 		[this.vx,this.vy] = v;
 	}
@@ -45,7 +49,7 @@ class Projectile {
 	render = (ctx) => {
 		ctx.beginPath();
 		ctx.fillStyle = '#000';
-		ctx.fillRect(this.x, this.y, 10, 10);
+		ctx.fillRect(this.x, this.y, this.s, this.s);
 	}
 }
 
