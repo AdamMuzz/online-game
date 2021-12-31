@@ -13,7 +13,8 @@ class Player {
 		this.id = id;
 		this.x = x;
 		this.y = y;
-		this.s = PLAYER_SIZE; 
+		this.w = PLAYER_SIZE;
+		this.h = PLAYER_SIZE; 
 		this.c = '#f00';
 	}
 	get_pos() {
@@ -27,19 +28,20 @@ class Player {
 		//draw body
 		ctx.beginPath();
 		ctx.fillStyle = this.c;
-		ctx.fillRect(this.x, this.y, this.s, this.s);
+		ctx.fillRect(this.x, this.y, this.w, this.h);
 		//draw nametag
 		ctx.fillStyle = '#000';
 		ctx.font = '15px serif';
 		ctx.textAlign = 'center';
-		ctx.fillText(this.id, this.x+(this.s/2), this.y-5, 75);
+		ctx.fillText(this.id, this.x+(this.w/2), this.y-5, 75);
 	}
 }
 //projectile obj
 class Projectile {
 	constructor(id, p, v) {
 		this.id = id;
-		this.s = PROJECTILE_SIZE;
+		this.w = PROJECTILE_SIZE;
+		this.h = PROJECTILE_SIZE;
 		[this.x, this.y] = p;
 		[this.vx,this.vy] = v;
 	}
@@ -50,13 +52,21 @@ class Projectile {
 	render = (ctx) => {
 		ctx.beginPath();
 		ctx.fillStyle = '#000';
-		ctx.fillRect(this.x, this.y, this.s, this.s);
+		ctx.fillRect(this.x, this.y, this.w, this.h);
 	}
+}
+//screen dim obj
+class Screen {
+	constructor(w, h) {
+		this.x = 0;
+		this.y = 0;
+		this.w = w;
+		this.h = h;
+	};
 }
 
 function Game_Screen(props) {
-	const [sprites, set_sprites] = useState(new Map([[props.name, new Player(props.name, 0, 0)]
-,['test', new Player('test', 100, 100)]]));
+	const [sprites, set_sprites] = useState(new Map([[props.name, new Player(props.name, 0, 0)]]));
 	const me = sprites.get(props.name);
 	const [projs, set_projs] = useState([]);
 	const [msgs, set_msgs] = useState(['','','']);
@@ -199,7 +209,7 @@ function Game_Screen(props) {
   	const render = () => {
     	frameCount++;
 			move(me, dirs, socket);
-			handle_collisions(sprites, me);
+			handle_collisions(sprites, projs);
     	draw(context);
     	animationFrameId = window.requestAnimationFrame(render);
     }
@@ -248,9 +258,6 @@ const move = (player, dirs, socket) => {
 }
 
 const handle_collisions = (players, projectiles) => {
-	let x = players.get('test');
-	if (collide(x, projectiles)) {x.c = '#0f0';}
-	else {x.c = '#f00';}
 	/*for (i of projectiles) {
 		for (j of players.values()) {
 
@@ -258,7 +265,7 @@ const handle_collisions = (players, projectiles) => {
 	}*/
 }
 const collide = (o1, o2) => {
-	return !(o1.x > o2.x+o2.s || o2.x > o1.x+o1.s || o1.y+o1.s < o2.y || o2.y +o2.s < o1.y);
+	return !(o1.x > o2.x+o2.w || o2.x > o1.x+o1.w || o1.y+o1.h < o2.y || o2.y +o2.h < o1.y);
 }
 
 const get_time = () => {
