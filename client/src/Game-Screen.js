@@ -68,13 +68,15 @@ class Screen {
 function Game_Screen(props) {
 	const [sprites, set_sprites] = useState(new Map([[props.name, new Player(props.name, 0, 0)]]));
 	const me = sprites.get(props.name);
-	const [projs, set_projs] = useState([]);
+	const projs = [];
 	const [msgs, set_msgs] = useState(['','','']);
 	const [mcoords, set_mcoords] = useState([0,0]);
 	const canvasRef = useRef(null);
-	let dirs = [false,false,false,false];
+	let dirs = [false,false,false,false,false];
+	let can_fire = true;
 	let frameCount = 0;
 	let socket = null;
+	let screen = null;
 
 	const handle_key_down = (e) => {
 		switch(e.key) {
@@ -89,6 +91,9 @@ function Game_Screen(props) {
 				break;
 			case 'd':
 				if (!dirs[3]) {dirs[3] = true;}
+				break;
+			case ' ':
+				if (!dirs[4]) {dirs[4] = true;}
 				break;
 			default:
 				return;
@@ -108,6 +113,9 @@ function Game_Screen(props) {
 			case 'd':
 				dirs[3] = false;
 				break;
+			case ' ':
+				dirs[4] = false;
+				break;
 			default:
 				return;
 		}
@@ -120,11 +128,18 @@ function Game_Screen(props) {
 			set_mcoords([x,y]);
 		}
 	}
+	const handle_shoot = () => {
+		if (can_fire && dirs[4]) {
+			console.log('shoot!');
+			projs.push(new Projectile(me.id,[me.x,me.y],[4,0]));
+			can_fire = false;
+		}
+	}
 
 	//called on initial mount of game screen
 	useEffect(() => {
-		//fix canvas resolution
-		fix_res(canvasRef.current);
+		//fix canvas resolution, save its dimensions
+		screen = fix_res(canvasRef.current);
 
 		//create connection to backend
 		socket = io(ENDPOINT);
@@ -183,10 +198,10 @@ function Game_Screen(props) {
 		ctx.beginPath();
 		ctx.fillStyle = '#fff';
 		ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-		//draw all sprites
-		for (const i of sprites.values()) {
-			i.render(ctx);
-		}
+		//draw all players
+		for (const i of sprites.values()) {i.render(ctx);}
+		//draw all projectiles
+		for (const i of projs) {i.render(ctx);}
 		//draw msg board
 		ctx.beginPath();
 		ctx.fillStyle = '#0003';
@@ -208,8 +223,10 @@ function Game_Screen(props) {
 
   	const render = () => {
     	frameCount++;
+			handle_shoot();
 			move(me, dirs, socket);
-			handle_collisions(sprites, projs);
+			for (const i of projs) {i.move();}
+			handle_collisions(sprites, projs, screen);
     	draw(context);
     	animationFrameId = window.requestAnimationFrame(render);
     }
@@ -242,6 +259,7 @@ const fix_res = (canvas) => {
 	canvas.height = rect.height * dpr;
 	let ctx = canvas.getContext('2d');
 	ctx.scale(dpr, dpr);
+	return (new Screen(rect.width, rect.height));
 }
 
 const move = (player, dirs, socket) => {
@@ -257,12 +275,16 @@ const move = (player, dirs, socket) => {
 	if (moved) {socket.emit('moved', [x,y]);}
 }
 
-const handle_collisions = (players, projectiles) => {
-	/*for (i of projectiles) {
-		for (j of players.values()) {
-
+const handle_collisions = (players, projectiles, screen) => {
+	for (let i = projectiles.length - 1; i >= 0; i--) {
+		if (!collide(projectiles[i],screen)) {
+			projectiles.splice(i,1);
+			console.log('projectile destroyed');
 		}
-	}*/
+		/*for (const j of players.values()) {
+
+		}*/
+	}
 }
 const collide = (o1, o2) => {
 	return !(o1.x > o2.x+o2.w || o2.x > o1.x+o1.w || o1.y+o1.h < o2.y || o2.y +o2.h < o1.y);
