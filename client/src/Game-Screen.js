@@ -131,13 +131,16 @@ function Game_Screen(props) {
 	}
 	const handle_shoot = () => {
 		if (me.can_fire && dirs[4]) {
-			const [x,y] = [mcoords[0] - me.x, mcoords[1] - me.y];	//vector pointing from player to cursor
-			const normalizer = Math.sqrt(x**2 + y**2);						//make unit vector
-			const vx = 10 * x / normalizer;												//scale so ||v|| == 10
+			const [x,y] = [mcoords[0] - me.x, mcoords[1] - me.y];		//vector pointing from player to cursor
+			const normalizer = Math.sqrt(x**2 + y**2);							//make unit vector
+			const vx = 10 * x / normalizer;													//scale so ||v|| == 10
 			const vy = 10 * y / normalizer;
-			projs.push(new Projectile(me.id,[me.x,me.y],[vx,vy]));
+			projs.push(new Projectile(me.id,[me.x,me.y],[vx,vy]));	//create new projectile
 			me.can_fire = false;
+			me.frames_til_fire = 60;
 		}
+		else if (me.frames_til_fire) {me.frames_til_fire--;}			//cooldown till next fire is 60 frames (~1s)
+		else if (!me.can_fire) {me.can_fire = true;}							//can fire when cooldown === 0
 	}
 
 	//called on initial mount of game screen
@@ -269,6 +272,7 @@ const setup_player = (player) => {
 	//add extra features to user's player obj
 	player.c = '#0f0';
 	player.can_fire = true;
+	player.frames_til_fire = 0;
 	return player;
 }
 
