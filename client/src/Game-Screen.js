@@ -67,13 +67,13 @@ class Screen {
 
 function Game_Screen(props) {
 	const [sprites, set_sprites] = useState(new Map([[props.name, new Player(props.name, 0, 0)]]));
-	const me = sprites.get(props.name);
+	const me = setup_player(sprites.get(props.name));
 	const projs = [];
 	const [msgs, set_msgs] = useState(['','','']);
 	const mcoords = [0,0];
 	const canvasRef = useRef(null);
 	let dirs = [false,false,false,false,false];
-	let can_fire = true;
+	//let can_fire = true;
 	let frameCount = 0;
 	let socket = null;
 	let screen = null;
@@ -130,13 +130,13 @@ function Game_Screen(props) {
 		}
 	}
 	const handle_shoot = () => {
-		if (can_fire && dirs[4]) {
+		if (me.can_fire && dirs[4]) {
 			const [x,y] = [mcoords[0] - me.x, mcoords[1] - me.y];	//vector pointing from player to cursor
 			const normalizer = Math.sqrt(x**2 + y**2);						//make unit vector
 			const vx = 10 * x / normalizer;												//scale so ||v|| == 10
 			const vy = 10 * y / normalizer;
 			projs.push(new Projectile(me.id,[me.x,me.y],[vx,vy]));
-			can_fire = false;
+			me.can_fire = false;
 		}
 	}
 
@@ -263,6 +263,13 @@ const fix_res = (canvas) => {
 	let ctx = canvas.getContext('2d');
 	ctx.scale(dpr, dpr);
 	return (new Screen(rect.width, rect.height));
+}
+
+const setup_player = (player) => {
+	//add extra features to user's player obj
+	player.c = '#0f0';
+	player.can_fire = true;
+	return player;
 }
 
 const move = (player, dirs, socket) => {
