@@ -133,8 +133,8 @@ function Game_Screen(props) {
 		if (me.can_fire && dirs[4]) {
 			const [x,y] = [mcoords[0] - me.x, mcoords[1] - me.y];		//vector pointing from player to cursor
 			const normalizer = Math.sqrt(x**2 + y**2);							//make unit vector
-			const vx = 10 * x / normalizer;													//scale so ||v|| == 10
-			const vy = 10 * y / normalizer;
+			const vx = 15 * x / normalizer;													//scale so ||v|| == 15
+			const vy = 15 * y / normalizer;
 			projs.push(new Projectile(me.id,[me.x,me.y],[vx,vy]));	//create new projectile
 			me.can_fire = false;
 			me.frames_til_fire = 60;
