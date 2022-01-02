@@ -233,12 +233,14 @@ function Game_Screen(props) {
 		let animationFrameId;
 
   	const render = () => {
-    	frameCount++;
+			//draw previous frame's state
+			draw(context);
+			//calculate this frames state
+			frameCount++;
 			handle_shoot();
 			move(me, dirs, socket);
 			for (const i of projs) {i.move();}
 			handle_collisions(me, projs, screen, socket);
-    	draw(context);
 			if (!me.alive) {props.quit();}
     	animationFrameId = window.requestAnimationFrame(render);
     }
