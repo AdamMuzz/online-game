@@ -273,6 +273,23 @@ const setup_player = (player) => {
 	player.c = '#0f0';
 	player.can_fire = true;
 	player.frames_til_fire = 0;
+	player.render = function render(ctx) {
+		//draw body
+		ctx.beginPath();
+		ctx.fillStyle = this.c;
+		ctx.fillRect(this.x, this.y, this.w, this.h);
+		//draw nametag
+		ctx.fillStyle = '#000';
+		ctx.font = '15px serif';
+		ctx.textAlign = 'center';
+		ctx.fillText(this.id, this.x+(this.w/2), this.y-5, 75);
+		//draw reload bar
+		if (this.frames_til_fire) {
+			const width = (this.w / 60)*(60 - this.frames_til_fire);
+			ctx.fillStyle = '#0005';
+			ctx.fillRect(this.x, this.y, width, 3);
+		}
+	}
 	return player;
 }
 
@@ -291,10 +308,11 @@ const move = (player, dirs, socket) => {
 
 const handle_collisions = (players, projectiles, screen) => {
 	for (let i = projectiles.length - 1; i >= 0; i--) {
+		//if projectile out of bounds, delete it
 		if (!collide(projectiles[i],screen)) {
 			projectiles.splice(i,1);
-			console.log('projectile destroyed');
 		}
+		//if it is touching user, kill user
 		/*for (const j of players.values()) {
 
 		}*/
