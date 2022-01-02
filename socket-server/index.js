@@ -64,6 +64,11 @@ io.on('connection', (socket) => {
 		socket.broadcast.emit('moved', player);
 	});
 
+	//handle when player fires
+	socket.on('fired', (proj_data) => {
+		socket.broadcast.emit('fired', proj_data);
+	});
+
 	//handle when player disconnects
 	socket.on('disconnect', () => {
 		id = players.get(socket).id;

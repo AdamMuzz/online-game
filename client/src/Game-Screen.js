@@ -73,7 +73,6 @@ function Game_Screen(props) {
 	const mcoords = [0,0];
 	const canvasRef = useRef(null);
 	let dirs = [false,false,false,false,false];
-	//let can_fire = true;
 	let frameCount = 0;
 	let socket = null;
 	let screen = null;
@@ -136,6 +135,7 @@ function Game_Screen(props) {
 			const vx = 15 * x / normalizer;													//scale so ||v|| == 15
 			const vy = 15 * y / normalizer;
 			projs.push(new Projectile(me.id,[me.x,me.y],[vx,vy]));	//create new projectile
+			socket.emit('fired', {id: me.id, p: [me.x,me.y], v: [vx,vy]});	//alert server
 			me.can_fire = false;
 			me.frames_til_fire = 60;
 		}
@@ -171,6 +171,10 @@ function Game_Screen(props) {
 			const s = sprites;
 			s.get(player.id).set_pos(player.x, player.y);
 			set_sprites(s);
+		});
+		//handle when someone else shoots
+		socket.on('fired', (proj) => {
+			projs.push(new Projectile(proj.id, proj.p, proj.v));
 		});
 		//handle when someone leaves
 		socket.on('left', (id) => {
@@ -233,7 +237,7 @@ function Game_Screen(props) {
 			handle_shoot();
 			move(me, dirs, socket);
 			for (const i of projs) {i.move();}
-			handle_collisions(sprites, projs, screen);
+			handle_collisions(me, projs, screen, socket);
     	draw(context);
     	animationFrameId = window.requestAnimationFrame(render);
     }
@@ -306,7 +310,7 @@ const move = (player, dirs, socket) => {
 	if (moved) {socket.emit('moved', [x,y]);}
 }
 
-const handle_collisions = (players, projectiles, screen) => {
+const handle_collisions = (player, projectiles, screen, socket) => {
 	for (let i = projectiles.length - 1; i >= 0; i--) {
 		//if projectile out of bounds, delete it
 		if (!collide(projectiles[i],screen)) {
