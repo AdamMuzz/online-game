@@ -239,6 +239,7 @@ function Game_Screen(props) {
 			for (const i of projs) {i.move();}
 			handle_collisions(me, projs, screen, socket);
     	draw(context);
+			if (!me.alive) {props.quit();}
     	animationFrameId = window.requestAnimationFrame(render);
     }
     render();
@@ -275,6 +276,7 @@ const fix_res = (canvas) => {
 const setup_player = (player) => {
 	//add extra features to user's player obj
 	player.c = '#0f0';
+	player.alive = true;
 	player.can_fire = true;
 	player.frames_til_fire = 0;
 	player.render = function render(ctx) {
@@ -310,16 +312,18 @@ const move = (player, dirs, socket) => {
 	if (moved) {socket.emit('moved', [x,y]);}
 }
 
-const handle_collisions = (player, projectiles, screen, socket) => {
+const handle_collisions = (me, projectiles, screen, socket) => {
 	for (let i = projectiles.length - 1; i >= 0; i--) {
+		//if it is touching user, kill user
+		if (me.id != projectiles[i].id && me.alive && collide(me, projectiles[i])) {
+			me.alive = false;
+			projectiles.splice(i,1);
+			socket.emit('killed');
+		}
 		//if projectile out of bounds, delete it
-		if (!collide(projectiles[i],screen)) {
+		else if (!collide(projectiles[i],screen)) {
 			projectiles.splice(i,1);
 		}
-		//if it is touching user, kill user
-		/*for (const j of players.values()) {
-
-		}*/
 	}
 }
 const collide = (o1, o2) => {
