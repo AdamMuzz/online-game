@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import {io} from 'socket.io-client';
 import './Game-Screen.css';
 
-const ENDPOINT = 'http://10.0.0.30:9000';
+const ENDPOINT = 'http://192.168.1.78:9000';	//'http://10.0.0.30:9000'
 const PLAYER_SIZE = 40;
 const PROJECTILE_SIZE = 10;
 
@@ -130,17 +130,26 @@ function Game_Screen(props) {
 	}
 	const handle_shoot = () => {
 		if (me.can_fire && dirs[4]) {
-			const [x,y] = [mcoords[0] - me.x, mcoords[1] - me.y];		//vector pointing from player to cursor
-			const normalizer = Math.sqrt(x**2 + y**2);							//make unit vector
-			const vx = 15 * x / normalizer;													//scale so ||v|| == 15
+			const [x,y] = [mcoords[0] - me.x, mcoords[1] - me.y];			//vector pointing from player to cursor
+			const normalizer = Math.sqrt(x**2 + y**2);						//make unit vector
+			const vx = 15 * x / normalizer;									//scale so ||v|| == 15
 			const vy = 15 * y / normalizer;
-			projs.push(new Projectile(me.id,[me.x,me.y],[vx,vy]));	//create new projectile
+			projs.push(new Projectile(me.id,[me.x,me.y],[vx,vy]));			//create new projectile
 			socket.emit('fired', {id: me.id, p: [me.x,me.y], v: [vx,vy]});	//alert server
 			me.can_fire = false;
 			me.frames_til_fire = 60;
 		}
-		else if (me.frames_til_fire) {me.frames_til_fire--;}			//cooldown till next fire is 60 frames (~1s)
-		else if (!me.can_fire) {me.can_fire = true;}							//can fire when cooldown === 0
+		else if (me.frames_til_fire) {me.frames_til_fire--;}				//cooldown till next fire is 60 frames (~1s)
+		else if (!me.can_fire) {me.can_fire = true;}						//can fire when cooldown === 0
+	}
+	//TODO: alert everyone else that ur dead
+	const handle_alive_status = () => {
+		if (!me.alive) {
+			//reset player
+			me.alive = true;
+			me.set_pos(0,0);
+			socket.emit('moved', [0,0]);
+		}
 	}
 
 	//called on initial mount of game screen
@@ -175,6 +184,11 @@ function Game_Screen(props) {
 		//handle when someone else shoots
 		socket.on('fired', (proj) => {
 			projs.push(new Projectile(proj.id, proj.p, proj.v));
+		});
+		//handle someone else dies
+		socket.on('died', (ids) => {
+			msgs.shift();
+			msgs.push(`${get_time()} ${ids[1]} killed by ${ids[0]}`);
 		});
 		//handle when someone leaves
 		socket.on('left', (id) => {
@@ -241,7 +255,7 @@ function Game_Screen(props) {
 			move(me, dirs, socket);
 			for (const i of projs) {i.move();}
 			handle_collisions(me, projs, screen, socket);
-			if (!me.alive) {props.quit();}
+			handle_alive_status();
     	animationFrameId = window.requestAnimationFrame(render);
     }
     render();
@@ -317,10 +331,10 @@ const move = (player, dirs, socket) => {
 const handle_collisions = (me, projectiles, screen, socket) => {
 	for (let i = projectiles.length - 1; i >= 0; i--) {
 		//if it is touching user, kill user
-		if (me.id != projectiles[i].id && me.alive && collide(me, projectiles[i])) {
+		if (me.id !== projectiles[i].id && me.alive && collide(me, projectiles[i])) {
 			me.alive = false;
+			socket.emit('died', projectiles[i].id);
 			projectiles.splice(i,1);
-			socket.emit('killed');
 		}
 		//if projectile out of bounds, delete it
 		else if (!collide(projectiles[i],screen)) {

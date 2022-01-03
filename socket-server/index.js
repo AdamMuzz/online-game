@@ -69,6 +69,12 @@ io.on('connection', (socket) => {
 		socket.broadcast.emit('fired', proj_data);
 	});
 
+	//handle player dies
+	socket.on('died', (killer_id) => {
+		//[killer_id,killed_id]
+		io.emit('died', [killer_id, players.get(socket).id]);
+	});
+
 	//handle when player disconnects
 	socket.on('disconnect', () => {
 		id = players.get(socket).id;
