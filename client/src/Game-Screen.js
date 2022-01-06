@@ -269,7 +269,7 @@ function Game_Screen(props) {
 		<div className='App'>
 			<div id='header'>
 				<p className='text'>Playing as <b>{props.name}</b> in lobby <b>{props.lobby}</b></p>
-				<button onClick={props.quit}>Quit</button>
+				<button id='quit' onClick={props.quit}>Quit</button>
 			</div>
 
 			<canvas id='screen' ref={canvasRef}/>
