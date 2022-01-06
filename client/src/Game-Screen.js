@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import {io} from 'socket.io-client';
 import './Game-Screen.css';
 
-const ENDPOINT = 'http://192.168.1.78:9000';	//'http://10.0.0.30:9000'
+const ENDPOINT = 'http://192.168.1.114:9000';	//'http://10.0.0.30:9000'
 const PLAYER_SIZE = 40;
 const PROJECTILE_SIZE = 10;
 
@@ -268,7 +268,7 @@ function Game_Screen(props) {
 	return (
 		<div className='App'>
 			<div id='header'>
-				<p className='text'>{`Playing as ${props.name}!`}</p>
+				<p className='text'>Playing as <b>{props.name}</b> in lobby <b>{props.lobby}</b></p>
 				<button onClick={props.quit}>Quit</button>
 			</div>
 

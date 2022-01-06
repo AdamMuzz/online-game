@@ -5,9 +5,11 @@ import Game_Screen from './Game-Screen';
 function App() {
   const [is_playing, set_playing] = useState(false);
   const [name, set_name] = useState('');
+  const [lobby, set_lobby] = useState('');
 
-  const play = (name) => {
+  const play = (name, lobby) => {
     set_name(name);
+    set_lobby(lobby);
     set_playing(true);
   }
   const quit = () => {
@@ -16,7 +18,7 @@ function App() {
 
   if (is_playing) {
     return (
-      <Game_Screen name={name} quit={quit} />
+      <Game_Screen name={name} lobby={lobby} quit={quit} />
     );
   }
   return (

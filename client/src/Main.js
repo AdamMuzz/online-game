@@ -3,14 +3,12 @@ import {useState} from 'react';
 import './Main.css';
 
 function Main(props) {
-  const [input, set_input] = useState('');
+  const [name, set_name] = useState('');
+  const [lobby, set_lobby] = useState('Main');
 
-  let handle_change = e => {
-    set_input(e.target.value)
-  }
-  let handle_submit = () => {
-	  props.play(input);
-  }
+  let handle_change = e => {set_name(e.target.value);}
+  let handle_change2 = e => {set_lobby(e.target.value);}
+  let handle_submit = () => {props.play(name, lobby);}
 
   return (
     <div className="App">
@@ -20,7 +18,9 @@ function Main(props) {
 
         <div id="Name_Input_Wrapper">
           <p className="text">Name:</p>
-          <input type='text' value={input} onChange={handle_change} />
+          <input type='text' value={name} onChange={handle_change} />
+          <p className='text'>Lobby:</p>
+          <input type='text' value={lobby} onChange={handle_change2} />
           <button onClick={handle_submit}>Play</button>
         </div>
 
