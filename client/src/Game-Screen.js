@@ -119,15 +119,17 @@ function Game_Screen(props) {
 				return;
 		}
 	}
+
 	const get_mouse = (e) => {
 		const rect = canvasRef.current.getBoundingClientRect();
 		const x = Math.floor(e.clientX - rect.left);
-    const y = Math.floor(e.clientY - rect.top);
+    	const y = Math.floor(e.clientY - rect.top);
 		if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
 			mcoords[0] = x;
 			mcoords[1] = y;
 		}
 	}
+
 	const handle_shoot = () => {
 		if (me.can_fire && dirs[4]) {
 			const [x,y] = [mcoords[0] - me.x, mcoords[1] - me.y];			//vector pointing from player to cursor
@@ -142,7 +144,7 @@ function Game_Screen(props) {
 		else if (me.frames_til_fire) {me.frames_til_fire--;}				//cooldown till next fire is 60 frames (~1s)
 		else if (!me.can_fire) {me.can_fire = true;}						//can fire when cooldown === 0
 	}
-	//TODO: alert everyone else that ur dead
+
 	const handle_alive_status = () => {
 		if (!me.alive) {
 			//reset player
@@ -159,7 +161,7 @@ function Game_Screen(props) {
 
 		//create connection to backend
 		socket = io(ENDPOINT);
-		socket.emit('joined', props.name);
+		socket.emit('joined', props.name, props.lobby);
 		//grab all already connected players
 		socket.on('welcome', (connected) => {
 			for (const i of connected) {
