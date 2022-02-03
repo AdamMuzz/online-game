@@ -1,5 +1,5 @@
 # online-game
-a very simple online game as a demonstration of network programming
+a very simple online game as a demonstration of using sockets in network programming
 
 # How to Run
 cd into the `socket-server` directory and run `npm start`
